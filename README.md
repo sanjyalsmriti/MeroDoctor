@@ -213,4 +213,4 @@ For questions or contributions, please refer to the individual folder documentat
 
 ---
 
-*This documentation is maintained as part of the MeroDoctor project. Last updated: [Current Date]* 
+*This documentation is maintained as part of the MeroDoctor project.* 
