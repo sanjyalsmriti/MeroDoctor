@@ -37,6 +37,10 @@ Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
+*.sln 
+
+# Temporary files
+tmp/
 *.sln
 # Temporary files
 *.tmp
