@@ -124,6 +124,12 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 JWT_SECRET=your_jwt_secret
 ```
+#### ESEWA TEST CREDENTIALS
+eSewa ID: 9806800001/2/3/4/5
+Password: Nepal@123
+MPIN: 1122 (for application only)
+Merchant ID/Service Code: EPAYTEST
+Token:123456
 
 #### Frontend (.env)
 ```
