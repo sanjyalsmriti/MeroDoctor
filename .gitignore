@@ -38,7 +38,5 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
-# Temporary files
-*.tmp
-# Temporary files
-*.temp
+# Temporary files no data
+# shutdown files
