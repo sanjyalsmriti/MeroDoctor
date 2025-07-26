@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import "tailwindcss";
+
+* {
+  font-family: "outfit", sans-serif;
+}
+.active hr {
+  @apply block;
+}
+::-webkit-scrollbar {
+  @apply hidden;
+}
+.bg-primary {
+  background-color: #5f6fff;
+}
+.text-primary {
+  color: #5f6fff;
+}
+.grid-cols-auto {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.hover-bg-primary:hover {
+  background-color: #5f6fff;
+}
+
+::-webkit-scrollbar {
+  @apply hidden;
+}

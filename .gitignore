@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+client/node_modules/
+
+# Build output
+dist/
+build/
+client/build/
+client/dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+client/.env
+client/.env.*
+
+# Coverage reports
+coverage/
+client/coverage/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
