@@ -12,6 +12,7 @@ import {
   allDoctors,
   appointmentCancel,
   appointmentsAdmin,
+  updateDoctor,
 } from "../controllers/adminController.js";
 import { changeAvailability } from "../controllers/doctorController.js";
 import upload from "../middlewares/multer.js";
@@ -25,6 +26,13 @@ const adminRouter = express.Router();
  * @access Protected
  */
 adminRouter.post("/add-doctor", authAdmin, upload.single("image"), addDoctor);
+
+/**
+ * @route POST /update-doctor/:doctId
+ * @desc Update an existing doctor (requires admin authentication, optional image upload)
+ * @access Protected
+ */
+adminRouter.post("/update-doctor/:doctId", authAdmin, upload.single("image"), updateDoctor);
 
 /**
  * @route POST /login
