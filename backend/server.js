@@ -13,6 +13,7 @@ import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
+import contactRouter from "./routes/contactRoute.js";
 
 // app configuration
 const app = express();
@@ -48,6 +49,10 @@ app.use("/api/user", userRouter);
  * Mounts payment-related API routes at /api/payment
  */
 app.use("/api/payment", paymentRouter);
+/**
+ * Mounts contact-related API routes at /api/contact
+ */
+app.use("/api/contact", contactRouter);
 // start server
 /**
  * Starts the Express server and listens on the specified port.
