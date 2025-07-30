@@ -10,6 +10,7 @@ import { useContext, useState, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import { assets } from "../../assets/assets";
 import AddDoctorModal from "../../components/AddDoctorModal";
+import { formatSpeciality } from "../../utils/specialityUtils";
 
 const DoctorsList = () => {
   const { doctors, token, getAllDoctors, changeAvailability } =
@@ -71,8 +72,10 @@ const DoctorsList = () => {
    * Filters doctors based on search term and filters
    */
   const filteredDoctors = doctors.filter(doctor => {
+    const doctorSpecialityFormatted = formatSpeciality(doctor.speciality);
     const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.speciality.toLowerCase().includes(searchTerm.toLowerCase());
+                         doctor.speciality.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         doctorSpecialityFormatted.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSpeciality = filterSpeciality === "all" || doctor.speciality === filterSpeciality;
     const matchesAvailability = filterAvailability === "all" || 
                                (filterAvailability === "available" && doctor.available) ||
@@ -228,7 +231,7 @@ const DoctorsList = () => {
               >
                 <option value="all">All Specialities</option>
                 {specialities.map(speciality => (
-                  <option key={speciality} value={speciality}>{speciality}</option>
+                  <option key={speciality} value={speciality}>{formatSpeciality(speciality)}</option>
                 ))}
               </select>
             </div>
@@ -314,7 +317,7 @@ const DoctorsList = () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
                       {doctor.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-3">{doctor.speciality}</p>
+                    <p className="text-sm text-gray-600 mb-3">{formatSpeciality(doctor.speciality)}</p>
                     
                     {/* Action Buttons */}
                     <div className="flex items-center justify-between">
@@ -436,7 +439,7 @@ const DoctorsList = () => {
                 
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{selectedDoctor.name}</h3>
-                  <p className="text-gray-600 mb-4">{selectedDoctor.speciality}</p>
+                  <p className="text-gray-600 mb-4">{formatSpeciality(selectedDoctor.speciality)}</p>
                   
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">

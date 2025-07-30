@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { formatSpeciality, toSnakeCase, getDisplaySpecialities } from "../utils/specialityUtils";
 
 const Doctors = () => {
   const { specialty } = useParams();
@@ -11,28 +12,32 @@ const Doctors = () => {
   const navigate = useNavigate();
   const { doctors } = useContext(AppContext);
 
-  const specialities = [
-    "All",
-    "General physician",
-    "Gynecologist", 
-    "Dermatologist",
-    "Pediatricians",
-    "Neurologist",
-    "Gastroenterologist"
-  ];
+  // Get specialities from utility function
+  const specialities = ["All", ...getDisplaySpecialities()];
 
   const applyFilter = () => {
     let filtered = doctors;
     
+    // Filter by speciality (convert display format to snake_case for comparison)
     if (specialty && specialty !== "All") {
-      filtered = doctors.filter((doctor) => doctor.speciality === specialty);
+      const snakeCaseSpecialty = toSnakeCase(specialty);
+      filtered = doctors.filter((doctor) => 
+        doctor.speciality === snakeCaseSpecialty || 
+        doctor.speciality === specialty
+      );
     }
     
+    // Filter by search term (search in both name and formatted speciality)
     if (searchTerm) {
-      filtered = filtered.filter((doctor) =>
-        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.speciality.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter((doctor) => {
+        const doctorName = doctor.name.toLowerCase();
+        const doctorSpeciality = formatSpeciality(doctor.speciality).toLowerCase();
+        const searchLower = searchTerm.toLowerCase();
+        
+        return doctorName.includes(searchLower) || 
+               doctorSpeciality.includes(searchLower) ||
+               doctor.speciality.toLowerCase().includes(searchLower);
+      });
     }
     
     setFilterDoc(filtered);
@@ -147,7 +152,7 @@ const Doctors = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                 {filterDoc.map((doctor) => (
+                {filterDoc.map((doctor) => (
                   <div
                     key={doctor._id}
                     onClick={() => navigate(`/appointments/${doctor._id}`)}
@@ -181,7 +186,7 @@ const Doctors = () => {
                       {/* Speciality Badge */}
                       <div className="absolute bottom-4 left-4">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {doctor.speciality}
+                          {formatSpeciality(doctor.speciality)}
                         </span>
                       </div>
                     </div>
@@ -193,7 +198,7 @@ const Doctors = () => {
                           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
                             {doctor.name}
                           </h3>
-                          <p className="text-sm text-gray-600">{doctor.speciality}</p>
+                          <p className="text-sm text-gray-600">{formatSpeciality(doctor.speciality)}</p>
                         </div>
                         
                         {/* Rating */}
