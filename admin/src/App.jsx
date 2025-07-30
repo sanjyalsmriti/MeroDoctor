@@ -15,8 +15,12 @@ import Sidebar from "./components/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Admin/Dashboard";
 import AllAppointments from "./pages/Admin/AllApointments";
-import AddDoctor from "./pages/Admin/AddDoctor";
 import DoctorsList from "./pages/Admin/DoctorsList";
+import ContactMessages from "./pages/Admin/ContactMessages";
+import { DoctorContext } from "./context/DoctorContext";
+import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
+import DoctorAppointments from "./pages/Doctor/DoctorAppointments.jsx";
+import DoctorProfile from "./pages/Doctor/DoctorProfile.jsx";
 
 /**
  * Renders the admin panel UI if authenticated, otherwise shows the login page.
@@ -26,20 +30,39 @@ import DoctorsList from "./pages/Admin/DoctorsList";
 
 const App = () => {
   const { token } = useContext(AdminContext);
+  const { dtoken } = useContext(DoctorContext);
 
-  return token ? (
-    <div className="bg-[#F8F9FD]">
-      <ToastContainer />
+  return token || dtoken ? (
+    <div className="min-h-screen bg-gray-50">
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Navbar />
-      <div className="flex items-start ">
+      <div className="flex">
         <Sidebar />
-        <Routes>
-          <Route path="/" element={<></>} />
-          <Route path="/admin-dashboard" element={<Dashboard />} />
-          <Route path="/admin-appointments" element={<AllAppointments />} />
-          <Route path="/add-doctor" element={<AddDoctor />} />
-          <Route path="/doctor-list" element={<DoctorsList />} />
-        </Routes>
+        <main className="flex-1 min-h-screen">
+          <Routes>
+            { /* Admin Routes */}
+            <Route path="/" element={<></>} />
+            <Route path="/admin-dashboard" element={<Dashboard />} />
+            <Route path="/admin-appointments" element={<AllAppointments />} />
+            <Route path="/doctor-list" element={<DoctorsList />} />
+            <Route path="/contact-messages" element={<ContactMessages />} />
+            {/* Doctor Routes */}
+            <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+            <Route path="/doctor-appointments" element={<DoctorAppointments />} />
+            <Route path="/doctor-profile" element={<DoctorProfile />} />
+          </Routes>
+        </main>
       </div>
     </div>
   ) : (
