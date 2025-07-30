@@ -66,11 +66,16 @@ backend/
 ### Doctor
 
 - `GET    /api/doctor/list` — List all doctors
+- `POST   /api/doctor/login` — Doctor login
+- `POST   /api/doctor/appointments` — Get doctor appointments
+- `GET    /api/doctor/profile/:doctorId` — Get doctor profile
+- `PUT    /api/doctor/profile/:doctorId` — Update doctor profile
 
 ### Admin
 
 - `POST   /api/admin/login` — Admin login
 - `POST   /api/admin/add-doctor` — Add new doctor
+- `POST   /api/admin/update-doctor/:doctId` — Update existing doctor
 - `POST   /api/admin/all-doctors` — List all doctors
 - `POST   /api/admin/change-availability` — Change doctor availability
 - `GET    /api/admin/appointments` — List all appointments
@@ -103,6 +108,20 @@ ESEWA_BASE_URL=https://rc-epay.esewa.com.np/api/epay/main/v2/form
 FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
+```
+
+---
+
+## Test Credentials
+
+For development and testing purposes, you can use the following test doctor account:
+
+- **Email**: doctor@test.com
+- **Password**: doctor123
+
+To create this test account, run:
+```bash
+node seedDoctor.js
 ```
 
 ---
