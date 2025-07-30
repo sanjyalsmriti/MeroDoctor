@@ -1,67 +1,55 @@
 /**
- * AllAppointments page component for admin panel.
- * Displays a list of all appointments with patient, doctor, date, status, and actions.
- * Features search, filtering, pagination, loading states, and modern UI design.
+ * DoctorAppointments page component for doctor panel.
+ * Displays a list of appointments for the logged-in doctor with modern UI design.
+ * Features search, filtering, pagination, loading states, and appointment management.
  *
- * @module pages/Admin/AllAppointments
+ * @module pages/Doctor/DoctorAppointments
  */
 
 import { useContext, useState, useEffect } from "react";
-import { AdminContext } from "../../context/AdminContext";
+import { DoctorContext } from "../../context/DoctorContext";
 import { AppContext } from "../../context/AppContext";
 import { assets } from "../../assets/assets";
 
-const AllAppointments = () => {
-  const { token, getAllAppointments, appointments, cancelAppointment } =
-    useContext(AdminContext);
-  const { calculateAge, slotDateFormat, currency } = useContext(AppContext);
+const DoctorAppointments = () => {
+  const { appointments, appointmentStats, loading, getAppointments } = useContext(DoctorContext);
+  const { slotDateFormat, calculateAge } = useContext(AppContext);
   
   // Local state for enhanced functionality
-  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterDate, setFilterDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [cancellingAppointment, setCancellingAppointment] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
 
   // Pagination settings
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   // Get unique statuses for filter
-  const statuses = [...new Set(appointments.map(appointment => appointment.status))];
+  const statuses = ["pending", "completed", "cancelled"];
 
   /**
-   * useEffect hook to fetch all appointments when the token is available.
+   * useEffect hook to fetch appointments when component mounts.
    */
   useEffect(() => {
-    if (token) {
-      fetchAppointments();
-    }
-  }, [token]);
+    getAppointments();
+  }, []);
 
   /**
-   * Fetches appointments with loading state
+   * Handles appointment status update
    */
-  const fetchAppointments = async () => {
-    setLoading(true);
+  const handleStatusUpdate = async (appointmentId, newStatus) => {
+    setUpdatingStatus(appointmentId);
     try {
-      await getAllAppointments();
+      // Here you would call the API to update appointment status
+      // For now, we'll just simulate the update
+      console.log(`Updating appointment ${appointmentId} to ${newStatus}`);
+      // await updateAppointmentStatus(appointmentId, newStatus);
+      // await getAppointments(); // Refresh data
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
     } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Handles appointment cancellation with confirmation
-   */
-  const handleCancelAppointment = async (appointment) => {
-    if (window.confirm(`Are you sure you want to cancel the appointment for ${appointment.userData.name}?`)) {
-      setCancellingAppointment(appointment._id);
-      try {
-        await cancelAppointment(appointment._id);
-      } finally {
-        setCancellingAppointment(null);
-      }
+      setUpdatingStatus(null);
     }
   };
 
@@ -71,12 +59,15 @@ const AllAppointments = () => {
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearch = 
       appointment.userData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appointment.docData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appointment.status.toLowerCase().includes(searchTerm.toLowerCase());
+      appointment.userData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      appointment.status?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = filterStatus === "all" || appointment.status === filterStatus;
+    const matchesStatus = filterStatus === "all" || 
+      (filterStatus === "pending" && !appointment.cancelled && !appointment.isCompleted) ||
+      (filterStatus === "completed" && appointment.isCompleted) ||
+      (filterStatus === "cancelled" && appointment.cancelled);
     
-    const matchesDate = !filterDate || appointment.date === filterDate;
+    const matchesDate = !filterDate || appointment.slotDate === filterDate;
     
     return matchesSearch && matchesStatus && matchesDate;
   });
@@ -99,11 +90,35 @@ const AllAppointments = () => {
     setCurrentPage(1);
   };
 
-  // Statistics
-  const totalAppointments = appointments.length;
-  const pendingAppointments = appointments.filter(a => a.status === "pending").length;
-  const completedAppointments = appointments.filter(a => a.status === "completed").length;
-  const cancelledAppointments = appointments.filter(a => a.cancelled).length;
+  /**
+   * Gets status text for appointments
+   */
+  const getStatusText = (cancelled, isCompleted) => {
+    if (cancelled) return 'Cancelled';
+    if (isCompleted) return 'Completed';
+    return 'Pending';
+  };
+
+  /**
+   * Gets status color for appointments
+   */
+  const getStatusColor = (cancelled, isCompleted) => {
+    if (cancelled) return 'bg-red-100 text-red-800';
+    if (isCompleted) return 'bg-green-100 text-green-800';
+    return 'bg-yellow-100 text-yellow-800';
+  };
+
+  /**
+   * Formats currency
+   */
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   return (
     <div className="p-6 max-h-[90vh] overflow-y-auto bg-gray-50">
@@ -112,10 +127,10 @@ const AllAppointments = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <img src={assets.appointments_icon} alt="Appointments" className="w-8 h-8" />
-            <h1 className="text-2xl font-bold text-gray-800">Appointments Management</h1>
+            <h1 className="text-2xl font-bold text-gray-800">My Appointments</h1>
           </div>
           <button
-            onClick={fetchAppointments}
+            onClick={getAppointments}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +146,7 @@ const AllAppointments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Appointments</p>
-                <p className="text-2xl font-bold text-gray-900">{totalAppointments}</p>
+                <p className="text-2xl font-bold text-gray-900">{appointmentStats.total || 0}</p>
               </div>
               <div className="p-2 bg-blue-100 rounded-lg">
                 <img src={assets.appointment_icon} alt="Total" className="w-6 h-6" />
@@ -143,7 +158,7 @@ const AllAppointments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">{pendingAppointments}</p>
+                <p className="text-2xl font-bold text-yellow-600">{appointmentStats.pending || 0}</p>
               </div>
               <div className="p-2 bg-yellow-100 rounded-lg">
                 <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,7 +172,7 @@ const AllAppointments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{completedAppointments}</p>
+                <p className="text-2xl font-bold text-green-600">{appointmentStats.completed || 0}</p>
               </div>
               <div className="p-2 bg-green-100 rounded-lg">
                 <img src={assets.tick_icon} alt="Completed" className="w-6 h-6" />
@@ -168,11 +183,13 @@ const AllAppointments = () => {
           <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                <p className="text-2xl font-bold text-red-600">{cancelledAppointments}</p>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-purple-600">{formatCurrency(appointmentStats.monthlyRevenue || 0)}</p>
               </div>
-              <div className="p-2 bg-red-100 rounded-lg">
-                <img src={assets.cancel_icon} alt="Cancelled" className="w-6 h-6" />
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
               </div>
             </div>
           </div>
@@ -187,7 +204,7 @@ const AllAppointments = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by patient, doctor, or status..."
+                  placeholder="Search by patient name, email, or status..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -210,7 +227,7 @@ const AllAppointments = () => {
               >
                 <option value="all">All Status</option>
                 {statuses.map(status => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>
                 ))}
               </select>
             </div>
@@ -248,7 +265,7 @@ const AllAppointments = () => {
         </div>
       )}
 
-      {/* Appointments Table */}
+      {/* Appointments List */}
       {!loading && (
         <>
           <div className="flex justify-between items-center mb-4">
@@ -259,15 +276,14 @@ const AllAppointments = () => {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             {/* Table Header */}
-            <div className="hidden md:grid md:grid-cols-[0.5fr_2fr_1fr_2fr_2fr_1fr_1fr_1fr] gap-4 py-4 px-6 bg-gray-50 border-b border-gray-200">
-              <p className="text-sm font-medium text-gray-700">#</p>
+            <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_2fr_1fr_1fr_1fr] gap-4 py-4 px-6 bg-gray-50 border-b border-gray-200">
               <p className="text-sm font-medium text-gray-700">Patient</p>
+              <p className="text-sm font-medium text-gray-700">Contact Info</p>
               <p className="text-sm font-medium text-gray-700">Age</p>
-              <p className="text-sm font-medium text-gray-700">Date & Time</p>
-              <p className="text-sm font-medium text-gray-700">Doctor</p>
+              <p className="text-sm font-medium text-gray-700">Appointment Details</p>
               <p className="text-sm font-medium text-gray-700">Fees</p>
               <p className="text-sm font-medium text-gray-700">Status</p>
-              <p className="text-sm font-medium text-gray-700">Action</p>
+              <p className="text-sm font-medium text-gray-700">Actions</p>
             </div>
 
             {/* Table Body */}
@@ -278,44 +294,42 @@ const AllAppointments = () => {
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
-                {currentAppointments.map((appointment, index) => (
+                {currentAppointments.map((appointment) => (
                   <div
                     key={appointment._id}
-                    className="md:grid md:grid-cols-[0.5fr_2fr_1fr_2fr_2fr_1fr_1fr_1fr] gap-4 py-4 px-6 hover:bg-gray-50 transition-colors"
+                    className="md:grid md:grid-cols-[1fr_2fr_1fr_2fr_1fr_1fr_1fr] gap-4 py-4 px-6 hover:bg-gray-50 transition-colors"
                   >
                     {/* Mobile Layout */}
                     <div className="md:hidden mb-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">#{startIndex + index + 1}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          appointment.cancelled ? 'bg-red-100 text-red-800' :
-                          appointment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          appointment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {appointment.cancelled ? 'Cancelled' : appointment.status}
+                        <span className="text-sm font-medium text-gray-700">#{appointment._id.slice(-6)}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(appointment.cancelled, appointment.isCompleted)}`}>
+                          {getStatusText(appointment.cancelled, appointment.isCompleted)}
                         </span>
                       </div>
-                    </div>
-
-                    {/* Desktop Index */}
-                    <div className="hidden md:flex items-center">
-                      <p className="text-sm text-gray-900">{startIndex + index + 1}</p>
                     </div>
 
                     {/* Patient Info */}
                     <div className="flex items-center gap-3">
                       <img
                         className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-                        src={appointment.userData.image || "https://via.placeholder.com/40x40?text=U"}
+                        src={appointment.userData.image || "https://via.placeholder.com/40x40?text=P"}
                         alt={appointment.userData.name}
                         onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/40x40?text=U";
+                          e.target.src = "https://via.placeholder.com/40x40?text=P";
                         }}
                       />
                       <div>
                         <p className="font-medium text-gray-900">{appointment.userData.name}</p>
-                        <p className="text-xs text-gray-500">{appointment.userData.email}</p>
+                        <p className="text-xs text-gray-500">Patient</p>
+                      </div>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div className="flex items-center">
+                      <div>
+                        <p className="text-sm text-gray-900">{appointment.userData.email}</p>
+                        <p className="text-xs text-gray-500">{appointment.userData.phone || 'No phone'}</p>
                       </div>
                     </div>
 
@@ -324,69 +338,67 @@ const AllAppointments = () => {
                       <p className="text-sm text-gray-900">{calculateAge(appointment.userData.dob)}</p>
                     </div>
 
-                    {/* Date & Time */}
+                    {/* Appointment Details */}
                     <div className="flex items-center">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{slotDateFormat(appointment.date)}</p>
+                        <p className="text-sm font-medium text-gray-900">{slotDateFormat(appointment.slotDate)}</p>
                         <p className="text-xs text-gray-500">{appointment.slotTime}</p>
-                      </div>
-                    </div>
-
-                    {/* Doctor Info */}
-                    <div className="flex items-center gap-3">
-                      <img
-                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-                        src={appointment.docData.image || "https://via.placeholder.com/40x40?text=D"}
-                        alt={appointment.docData.name}
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/40x40?text=D";
-                        }}
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900">{appointment.docData.name}</p>
-                        <p className="text-xs text-gray-500">{appointment.docData.speciality}</p>
                       </div>
                     </div>
 
                     {/* Fees */}
                     <div className="flex items-center">
                       <p className="text-sm font-medium text-gray-900">
-                        {currency}{appointment.amount}
+                        {formatCurrency(appointment.amount)}
                       </p>
                     </div>
 
                     {/* Status */}
                     <div className="hidden md:flex items-center">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        appointment.cancelled ? 'bg-red-100 text-red-800' :
-                        appointment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        appointment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {appointment.cancelled ? 'Cancelled' : appointment.status}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(appointment.cancelled, appointment.isCompleted)}`}>
+                        {getStatusText(appointment.cancelled, appointment.isCompleted)}
                       </span>
                     </div>
 
-                    {/* Action */}
-                    <div className="flex items-center">
-                      {appointment.cancelled ? (
-                        <span className="text-red-500 text-sm font-medium">Cancelled</span>
-                      ) : (
-                        <button
-                          onClick={() => handleCancelAppointment(appointment)}
-                          disabled={cancellingAppointment === appointment._id}
-                          className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Cancel Appointment"
-                        >
-                          {cancellingAppointment === appointment._id ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                          ) : (
+                    {/* Actions */}
+                    <div className="flex items-center gap-2">
+                      {!appointment.cancelled && !appointment.isCompleted && (
+                        <>
+                          <button
+                            onClick={() => handleStatusUpdate(appointment._id, 'completed')}
+                            disabled={updatingStatus === appointment._id}
+                            className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                            title="Mark as Completed"
+                          >
+                            {updatingStatus === appointment._id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(appointment._id, 'cancelled')}
+                            disabled={updatingStatus === appointment._id}
+                            className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                            title="Cancel Appointment"
+                          >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
-                          )}
-                        </button>
+                          </button>
+                        </>
                       )}
+                      <button
+                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="View Details"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -445,4 +457,4 @@ const AllAppointments = () => {
   );
 };
 
-export default AllAppointments;
+export default DoctorAppointments;
