@@ -143,7 +143,7 @@ const DoctorProfile = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+              currency: 'NPR',
     }).format(amount || 0);
   };
 
