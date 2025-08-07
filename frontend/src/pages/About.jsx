@@ -29,7 +29,7 @@ const About = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-purple-200 rounded-3xl transform -rotate-2 scale-95 opacity-10 group-hover:-rotate-4 transition-transform duration-700 delay-100"></div>
             <img
               className="relative w-full rounded-3xl shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-700 group-hover:shadow-3xl"
-              src={assets.about_image}
+              src={assets.group_doc}
               alt="Healthcare professionals working together"
             />
             {/* Floating elements */}

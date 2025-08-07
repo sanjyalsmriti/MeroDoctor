@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../context/AdminContext";
 import { DoctorContext } from "../context/DoctorContext";
 /**
@@ -14,9 +15,11 @@ const Login = () => {
   const [state, setState] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { setToken, backendUrl } = useContext(AdminContext);
   const { loginDoctor } = useContext(DoctorContext);
+  const navigate = useNavigate();
   /**
    * Handles the form submission for admin login.
    * Sends login credentials to backend and sets token on success.
@@ -29,6 +32,7 @@ const Login = () => {
    */
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     try {
       if (state === "Admin") {
@@ -39,17 +43,30 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          toast.success("Login successful! Redirecting to dashboard...");
+          // Redirect to admin dashboard after successful login
+          setTimeout(() => {
+            navigate("/admin-dashboard");
+          }, 1000);
         } else {
           toast.error(data.message || "Login failed");
         }
       } else {
         const result = await loginDoctor(email, password);
-        if (!result.success) {
+        if (result.success) {
+          toast.success("Login successful! Redirecting to dashboard...");
+          // Redirect to doctor dashboard after successful login
+          setTimeout(() => {
+            navigate("/doctor-dashboard");
+          }, 1000);
+        } else {
           toast.error(result.message || "Login failed");
         }
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -117,9 +134,10 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </button>
 
             {/* Role Toggle */}

@@ -12,7 +12,7 @@ import { AdminContext } from "./context/AdminContext";
 import { useContext } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Admin/Dashboard";
 import AllAppointments from "./pages/Admin/AllApointments";
 import DoctorsList from "./pages/Admin/DoctorsList";
@@ -31,6 +31,13 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile.jsx";
 const App = () => {
   const { token } = useContext(AdminContext);
   const { dtoken } = useContext(DoctorContext);
+
+  // Determine which dashboard to redirect to based on authentication
+  const getDefaultRoute = () => {
+    if (token) return "/admin-dashboard";
+    if (dtoken) return "/doctor-dashboard";
+    return "/admin-dashboard"; // fallback
+  };
 
   return token || dtoken ? (
     <div className="min-h-screen bg-gray-50">
@@ -52,7 +59,7 @@ const App = () => {
         <main className="flex-1 min-h-screen">
           <Routes>
             { /* Admin Routes */}
-            <Route path="/" element={<></>} />
+            <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
             <Route path="/admin-dashboard" element={<Dashboard />} />
             <Route path="/admin-appointments" element={<AllAppointments />} />
             <Route path="/doctor-list" element={<DoctorsList />} />

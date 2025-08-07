@@ -12,6 +12,8 @@ import { v2 as cloudinary } from "cloudinary";
 import Doctor from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import Payment from "../models/paymentModel.js";
+import ngramSearch from "../utils/ngramSearch.js";
+import patientMatcher from "../utils/patientMatcher.js";
 
 /**
  * Registers a new user.
@@ -364,6 +366,171 @@ const getPaymentDetails = async (req, res) => {
   }
 };
 
+/**
+ * Search doctors using N-gram algorithm
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const searchDoctorsWithNgrams = async (req, res) => {
+  try {
+    const { query, filters = {}, limit = 20 } = req.body;
+
+    if (!query) {
+      return res.json({ success: false, message: "Search query is required" });
+    }
+
+    const searchResults = await ngramSearch.searchDoctors(query, filters, limit);
+
+    res.json({
+      success: true,
+      results: searchResults,
+      totalResults: searchResults.length,
+      searchQuery: query
+    });
+
+  } catch (error) {
+    console.error("Error in searchDoctorsWithNgrams:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Get search suggestions using N-grams
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const getNgramSearchSuggestions = async (req, res) => {
+  try {
+    const { query, limit = 5 } = req.query;
+
+    if (!query) {
+      return res.json({ success: false, message: "Query parameter required" });
+    }
+
+    const suggestions = await ngramSearch.getSearchSuggestions(query, limit);
+
+    res.json({
+      success: true,
+      suggestions,
+      query
+    });
+
+  } catch (error) {
+    console.error("Error in getNgramSearchSuggestions:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Match patient with doctors using N-gram algorithm
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const matchPatientWithDoctors = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { symptoms = {}, additionalCriteria = {}, limit = 10 } = req.body;
+
+    const matchedDoctors = await patientMatcher.matchPatientWithDoctors(
+      userId,
+      symptoms,
+      additionalCriteria,
+      limit
+    );
+
+    res.json({
+      success: true,
+      matchedDoctors,
+      totalMatches: matchedDoctors.length,
+      patientId: userId
+    });
+
+  } catch (error) {
+    console.error("Error in matchPatientWithDoctors:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Find similar doctors using N-gram similarity
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const findSimilarDoctors = async (req, res) => {
+  try {
+    const { doctorId, limit = 5 } = req.body;
+
+    if (!doctorId) {
+      return res.json({ success: false, message: "Doctor ID is required" });
+    }
+
+    const similarDoctors = await ngramSearch.findSimilarDoctors(doctorId, limit);
+
+    res.json({
+      success: true,
+      similarDoctors,
+      referenceDoctorId: doctorId
+    });
+
+  } catch (error) {
+    console.error("Error in findSimilarDoctors:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Get N-gram search statistics
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const getNgramStatistics = async (req, res) => {
+  try {
+    const stats = ngramSearch.getNgramStatistics();
+
+    res.json({
+      success: true,
+      statistics: stats
+    });
+
+  } catch (error) {
+    console.error("Error in getNgramStatistics:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * Get similar patients for a doctor
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
+ */
+const getSimilarPatients = async (req, res) => {
+  try {
+    const { doctorId, limit = 5 } = req.body;
+
+    if (!doctorId) {
+      return res.json({ success: false, message: "Doctor ID is required" });
+    }
+
+    const similarPatients = await patientMatcher.getSimilarPatients(doctorId, limit);
+
+    res.json({
+      success: true,
+      similarPatients,
+      doctorId
+    });
+
+  } catch (error) {
+    console.error("Error in getSimilarPatients:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -373,4 +540,10 @@ export {
   listAppointments,
   cancelAppointment,
   getPaymentDetails,
+  searchDoctorsWithNgrams,
+  getNgramSearchSuggestions,
+  matchPatientWithDoctors,
+  findSimilarDoctors,
+  getNgramStatistics,
+  getSimilarPatients,
 };

@@ -34,7 +34,7 @@ const DoctorDashboard = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+              currency: 'NPR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -58,30 +58,7 @@ const DoctorDashboard = () => {
     return 'bg-yellow-100 text-yellow-800';
   };
 
-  /**
-   * Calculate weekly trends for the last 7 days
-   */
-  const getWeeklyTrends = () => {
-    const trends = [];
-    const now = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      const dayEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-      
-      const dayAppointments = appointments.filter(apt => 
-        new Date(apt.date) >= dayStart && new Date(apt.date) < dayEnd
-      ).length;
-      
-      trends.push({
-        day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        count: dayAppointments
-      });
-    }
-    
-    return trends;
-  };
+
 
   /**
    * Get recent appointments for display
@@ -92,7 +69,6 @@ const DoctorDashboard = () => {
       .slice(0, 5);
   };
 
-  const weeklyTrends = getWeeklyTrends();
   const recentAppointments = getRecentAppointments();
 
   return (
@@ -208,90 +184,7 @@ const DoctorDashboard = () => {
             </div>
           </div>
 
-          {/* Charts and Analytics Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Weekly Appointment Trends */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Weekly Appointment Trends</h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Last 7 Days</span>
-                </div>
-              </div>
-              <div className="h-48 flex items-end justify-between gap-2">
-                {weeklyTrends.map((trend, index) => {
-                  const maxCount = Math.max(...weeklyTrends.map(t => t.count));
-                  const percentage = maxCount > 0 ? (trend.count / maxCount) * 100 : 0;
-                  
-                  return (
-                    <div key={index} className="flex-1 flex flex-col items-center">
-                      <div 
-                        className="w-full bg-blue-100 rounded-t"
-                        style={{ height: `${percentage}%` }}
-                      >
-                        <div 
-                          className="w-full bg-blue-500 rounded-t transition-all duration-300 hover:bg-blue-600"
-                          style={{ height: `${percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-xs text-gray-500 mt-2">
-                        {trend.day}
-                      </span>
-                      <span className="text-xs text-gray-700 font-medium">
-                        {trend.count}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
 
-            {/* Practice Performance */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Practice Performance</h3>
-                <span className="text-sm text-gray-600">This Month</span>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Completion Rate</p>
-                    <p className="text-xs text-gray-500">Successfully completed appointments</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-green-600">
-                      {appointmentStats.total > 0 
-                        ? Math.round((appointmentStats.completed / appointmentStats.total) * 100) 
-                        : 0}%
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Monthly Appointments</p>
-                    <p className="text-xs text-gray-500">Appointments this month</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-blue-600">{appointmentStats.monthly || 0}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Average Daily</p>
-                    <p className="text-xs text-gray-500">Appointments per day</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-purple-600">
-                      {Math.round((appointmentStats.monthly || 0) / 30)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Recent Appointments Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
