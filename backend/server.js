@@ -1,62 +1,41 @@
-/**
- * Main server entry point for the backend application.
- * Sets up Express, connects to MongoDB and Cloudinary, and mounts all API routes.
- *
- * @module server
- */
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
-import "dotenv/config";
-import connectDB from "./config/mongodb.js";
-import connectCloudinary from "./config/cloudinary.js";
-import adminRouter from "./routes/adminRoute.js";
-import doctorRouter from "./routes/doctorRoute.js";
-import userRouter from "./routes/userRoute.js";
-import paymentRouter from "./routes/paymentRoute.js";
-import contactRouter from "./routes/contactRoute.js";
+import dotenv from "dotenv";
 
-// app configuration
+dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 4000;
-connectDB();
-connectCloudinary();
-// middleware
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-/**
- * Health check endpoint to verify API is running.
- * @route GET /health
- * @returns {Object} 200 - JSON message indicating API status
- */
-app.get("/health", (req, res) => {
-  res.status(200).json({ message: "API is running" });
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
-// api endpoints
-/**
- * Mounts admin-related API routes at /api/admin
- */
-app.use("/api/admin", adminRouter);
-/**
- * Mounts doctor-related API routes at /api/doctor
- */
-app.use("/api/doctor", doctorRouter);
-/**
- * Mounts user-related API routes at /api/user
- */
-app.use("/api/user", userRouter);
-/**
- * Mounts payment-related API routes at /api/payment
- */
-app.use("/api/payment", paymentRouter);
-/**
- * Mounts contact-related API routes at /api/contact
- */
-app.use("/api/contact", contactRouter);
-// start server
-/**
- * Starts the Express server and listens on the specified port.
- */
+
+// Define your routes here
+app.use("/api/users", await import("./routes/userRoutes.mjs"));
+app.use("/api/appointments", await import("./routes/appointmentRoutes.mjs"));
+app.use("/api/doctors", await import("./routes/doctorRoutes.mjs"));
+app.use("/api/chat", await import("./routes/chatRoutes.mjs"));
+
+// Global Error Handler
+const errorHandler = (err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode);
+  res.json({
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+  });
+};
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
