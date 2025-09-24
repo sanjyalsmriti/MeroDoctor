@@ -10,8 +10,7 @@ import bcrypt from "bcrypt";
 import "dotenv/config";
 import Doctor from "./models/doctorModel.js";
 
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/MeroDoctor";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/MeroDoctor";
 
 /**
  * Connects to MongoDB database
@@ -33,7 +32,7 @@ const createTestDoctor = async () => {
   try {
     // Check if test doctor already exists
     const existingDoctor = await Doctor.findOne({ email: "doctor@test.com" });
-
+    
     if (existingDoctor) {
       console.log("Test doctor already exists");
       return;
@@ -48,19 +47,18 @@ const createTestDoctor = async () => {
       email: "doctor@test.com",
       password: hashedPassword,
       image: "https://via.placeholder.com/150x150?text=Doctor",
-      speciality: "ENT",
-      degree: "MBBS, MD (ENT)",
+      speciality: "Cardiology",
+      degree: "MBBS, MD (Cardiology)",
       experience: "15 years",
-      about:
-        "Experienced ENT with expertise in interventional cardiology and preventive care. Committed to providing the highest quality patient care.",
+      about: "Experienced cardiologist with expertise in interventional cardiology and preventive care. Committed to providing the highest quality patient care.",
       available: true,
       fees: 150,
       address: {
         street: "123 Medical Center Dr",
         city: "New York",
         state: "NY",
-        zipCode: "10001",
-      },
+        zipCode: "10001"
+      }
     });
 
     await testDoctor.save();
@@ -83,4 +81,4 @@ const main = async () => {
 };
 
 // Run the script
-main().catch(console.error);
+main().catch(console.error); 
