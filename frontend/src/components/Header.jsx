@@ -94,7 +94,7 @@ const Header = () => {
             <div className="relative z-10">
               <img 
                 className="w-full max-w-lg mx-auto lg:ml-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500" 
-                src={assets.hero_image} 
+                src={assets.header_img} 
                 alt="Healthcare professionals" 
               />
               

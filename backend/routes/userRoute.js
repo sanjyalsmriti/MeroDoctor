@@ -14,12 +14,6 @@ import {
   loginUser,
   registerUser,
   updateProfile,
-  searchDoctorsWithNgrams,
-  getNgramSearchSuggestions,
-  matchPatientWithDoctors,
-  findSimilarDoctors,
-  getNgramStatistics,
-  getSimilarPatients,
 } from "../controllers/userController.js";
 import authUser from "../middlewares/authUser.js";
 import upload from "../middlewares/multer.js";
@@ -86,47 +80,5 @@ userRouter.post("/cancel-appointment", authUser, cancelAppointment);
  * @access Protected
  */
 userRouter.post("/get-payment-details", authUser, getPaymentDetails);
-
-/**
- * @route POST /search-ngrams
- * @desc Search doctors using N-gram algorithm (requires authentication)
- * @access Protected
- */
-userRouter.post("/search-ngrams", authUser, searchDoctorsWithNgrams);
-
-/**
- * @route GET /suggestions-ngrams
- * @desc Get search suggestions using N-grams (requires authentication)
- * @access Protected
- */
-userRouter.get("/suggestions-ngrams", authUser, getNgramSearchSuggestions);
-
-/**
- * @route POST /match-patient
- * @desc Match patient with doctors using N-gram algorithm (requires authentication)
- * @access Protected
- */
-userRouter.post("/match-patient", authUser, matchPatientWithDoctors);
-
-/**
- * @route POST /similar-doctors
- * @desc Find similar doctors using N-gram similarity (requires authentication)
- * @access Protected
- */
-userRouter.post("/similar-doctors", authUser, findSimilarDoctors);
-
-/**
- * @route GET /ngram-statistics
- * @desc Get N-gram search statistics (requires authentication)
- * @access Protected
- */
-userRouter.get("/ngram-statistics", authUser, getNgramStatistics);
-
-/**
- * @route POST /similar-patients
- * @desc Get similar patients for a doctor (requires authentication)
- * @access Protected
- */
-userRouter.post("/similar-patients", authUser, getSimilarPatients);
 
 export default userRouter;

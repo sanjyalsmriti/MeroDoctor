@@ -1,268 +1,29 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @import "tailwindcss";
 
-/* Healthcare Theme Variables */
-:root {
-  /* Primary Colors */
-  --primary-blue: #2563EB;
-  --primary-green: #059669;
-  --accent-orange: #F59E0B;
-  --accent-purple: #7C3AED;
-  
-  /* Neutral Colors */
-  --white: #FFFFFF;
-  --light-gray: #F8FAFC;
-  --medium-gray: #64748B;
-  --dark-gray: #1E293B;
-  
-  /* Status Colors */
-  --success: #10B981;
-  --warning: #F59E0B;
-  --error: #EF4444;
-  --info: #3B82F6;
-}
-
-/* Typography */
 * {
-  font-family: "Open Sans", sans-serif;
+  font-family: "outfit", sans-serif;
 }
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-}
-
-/* Healthcare-specific utility classes */
-.bg-primary {
-  background-color: var(--primary-blue);
-}
-
-.bg-secondary {
-  background-color: var(--primary-green);
-}
-
-.bg-accent {
-  background-color: var(--accent-orange);
-}
-
-.bg-purple {
-  background-color: var(--accent-purple);
-}
-
-.text-primary {
-  color: var(--primary-blue);
-}
-
-.text-secondary {
-  color: var(--primary-green);
-}
-
-.text-accent {
-  color: var(--accent-orange);
-}
-
-.text-purple {
-  color: var(--accent-purple);
-}
-
-.border-primary {
-  border-color: var(--primary-blue);
-}
-
-.border-secondary {
-  border-color: var(--primary-green);
-}
-
-/* Status colors */
-.bg-success {
-  background-color: var(--success);
-}
-
-.bg-warning {
-  background-color: var(--warning);
-}
-
-.bg-error {
-  background-color: var(--error);
-}
-
-.bg-info {
-  background-color: var(--info);
-}
-
-.text-success {
-  color: var(--success);
-}
-
-.text-warning {
-  color: var(--warning);
-}
-
-.text-error {
-  color: var(--error);
-}
-
-.text-info {
-  color: var(--info);
-}
-
-/* Hover effects */
-.hover-bg-primary:hover {
-  background-color: var(--primary-blue);
-}
-
-.hover-bg-secondary:hover {
-  background-color: var(--primary-green);
-}
-
-.hover-bg-accent:hover {
-  background-color: var(--accent-orange);
-}
-
-/* Active states */
 .active hr {
   @apply block;
 }
-
-/* Scrollbar */
 ::-webkit-scrollbar {
   @apply hidden;
 }
-
-/* Grid utilities */
+.bg-primary {
+  background-color: #5f6fff;
+}
+.text-primary {
+  color: #5f6fff;
+}
 .grid-cols-auto {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
-/* Healthcare-specific gradients */
-.bg-gradient-healthcare {
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-green) 100%);
+.hover-bg-primary:hover {
+  background-color: #5f6fff;
 }
 
-.bg-gradient-warm {
-  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-purple) 100%);
-}
-
-/* Button styles */
-.btn-primary {
-  background-color: var(--primary-blue);
-  color: white;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background-color: #1D4ED8;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background-color: var(--primary-green);
-  color: white;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  background-color: #047857;
-  transform: translateY(-1px);
-}
-
-.btn-accent {
-  background-color: var(--accent-orange);
-  color: white;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-accent:hover {
-  background-color: #D97706;
-  transform: translateY(-1px);
-}
-
-/* Admin-specific styles */
-.admin-card {
-  background: var(--white);
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.admin-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.admin-sidebar {
-  background: linear-gradient(180deg, var(--primary-blue) 0%, #1D4ED8 100%);
-  color: white;
-}
-
-.admin-sidebar h1,
-.admin-sidebar h2,
-.admin-sidebar h3,
-.admin-sidebar h4,
-.admin-sidebar h5,
-.admin-sidebar h6 {
-  color: white;
-}
-
-.admin-sidebar .text-gray-600 {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.admin-sidebar .text-gray-900 {
-  color: white !important;
-}
-
-.admin-sidebar svg {
-  color: currentColor;
-}
-
-.admin-sidebar .nav-link {
-  color: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-}
-
-.admin-sidebar .nav-link:hover {
-  color: white;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.admin-sidebar .nav-link.active {
-  color: white;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-right: 2px solid white;
-}
-
-.admin-header {
-  background: var(--white);
-  border-bottom: 1px solid #E2E8F0;
-}
-
-/* Dashboard specific styles */
-.stat-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid var(--primary-blue);
-}
-
-.stat-card.success {
-  border-left-color: var(--success);
-}
-
-.stat-card.warning {
-  border-left-color: var(--warning);
-}
-
-.stat-card.error {
-  border-left-color: var(--error);
-}
-
-.stat-card.info {
-  border-left-color: var(--info);
+::-webkit-scrollbar {
+  @apply hidden;
 }

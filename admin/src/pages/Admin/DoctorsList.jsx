@@ -352,7 +352,7 @@ const DoctorsList = () => {
                           />
                         </button>
                       </div>
-                      <span className="text-sm text-gray-500">NPR {doctor.fees}</span>
+                      <span className="text-sm text-gray-500">${doctor.fees}</span>
                     </div>
                   </div>
                 </div>
@@ -463,7 +463,7 @@ const DoctorsList = () => {
                     {selectedDoctor.fees && (
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-gray-700">Fees:</span>
-                        <span className="text-sm text-gray-600">NPR {selectedDoctor.fees}</span>
+                        <span className="text-sm text-gray-600">${selectedDoctor.fees}</span>
                       </div>
                     )}
                     

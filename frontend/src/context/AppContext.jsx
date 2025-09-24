@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const AppContext = createContext();
 const AppContextProvider = (props) => {
-  const currencySymbol = "NPR";
+  const currencySymbol = "Rs.";
   const backendUrl =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   const [doctors, setDoctors] = useState([]);

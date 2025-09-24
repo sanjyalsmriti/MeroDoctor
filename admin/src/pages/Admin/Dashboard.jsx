@@ -61,7 +61,7 @@ const Dashboard = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-              currency: 'NPR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -88,7 +88,7 @@ const Dashboard = () => {
           </div>
           <button
             onClick={fetchDashboardData}
-            className="px-4 py-2 btn-primary rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -132,7 +132,9 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Total Appointments</p>
                   <p className="text-3xl font-bold text-gray-900">{dashboardData.appointments}</p>
-
+                  <p className="text-xs text-green-600 mt-1">
+                    +{dashboardData.growth?.appointments || 0}% from last month
+                  </p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-lg">
                   <img src={assets.appointment_icon} alt="Appointments" className="w-8 h-8" />
@@ -146,7 +148,9 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Total Patients</p>
                   <p className="text-3xl font-bold text-gray-900">{dashboardData.patients}</p>
-
+                  <p className="text-xs text-green-600 mt-1">
+                    +{dashboardData.growth?.patients || 0}% from last month
+                  </p>
                 </div>
                 <div className="p-3 bg-purple-100 rounded-lg">
                   <img src={assets.patients_icon} alt="Patients" className="w-8 h-8" />
@@ -162,7 +166,9 @@ const Dashboard = () => {
                   <p className="text-3xl font-bold text-gray-900">
                     {formatCurrency(dashboardData.revenue?.monthly || 0)}
                   </p>
-
+                  <p className="text-xs text-green-600 mt-1">
+                    +{dashboardData.growth?.revenue || 0}% from last month
+                  </p>
                 </div>
                 <div className="p-3 bg-yellow-100 rounded-lg">
                   <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +220,75 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Charts and Analytics Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Appointment Trends */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Appointment Trends</h3>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm text-gray-600">This Week</span>
+                </div>
+              </div>
+              <div className="h-48 flex items-end justify-between gap-2">
+                {dashboardData.weeklyTrends?.map((trend, index) => {
+                  const maxCount = Math.max(...dashboardData.weeklyTrends.map(t => t.count));
+                  const percentage = maxCount > 0 ? (trend.count / maxCount) * 100 : 0;
+                  
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div 
+                        className="w-full bg-blue-100 rounded-t"
+                        style={{ height: `${percentage}%` }}
+                      >
+                        <div 
+                          className="w-full bg-blue-500 rounded-t transition-all duration-300 hover:bg-blue-600"
+                          style={{ height: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs text-gray-500 mt-2">
+                        {trend.day}
+                      </span>
+                      <span className="text-xs text-gray-700 font-medium">
+                        {trend.count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
+            {/* Doctor Performance */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Top Performing Doctors</h3>
+                <span className="text-sm text-gray-600">This Month</span>
+              </div>
+              <div className="space-y-4">
+                {dashboardData.topDoctors?.map((doctor) => (
+                  <div key={doctor._id} className="flex items-center gap-3">
+                    <img
+                      className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+                      src={doctor.image || "https://via.placeholder.com/40x40?text=D"}
+                      alt={doctor.name}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/40x40?text=D";
+                      }}
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{doctor.name}</p>
+                      <p className="text-sm text-gray-500">{doctor.speciality}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">{doctor.completionRate}%</p>
+                      <p className="text-xs text-green-600">{doctor.totalAppointments} apps</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Latest Bookings Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

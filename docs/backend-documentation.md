@@ -148,7 +148,7 @@ backend/
 - `userId` (String, required): User who made payment
 - `appointmentId` (String, required): Associated appointment
 - `amount` (Number, required): Payment amount
-- `currency` (String, default: 'NPR'): Payment currency
+- `currency` (String, default: 'INR'): Payment currency
 - `paymentMethod` (String, required): Payment gateway used
 - `status` (String, required): Payment status
 - `transactionId` (String): Gateway transaction ID

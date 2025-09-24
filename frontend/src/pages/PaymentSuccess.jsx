@@ -200,7 +200,7 @@ export default function PaymentSuccess() {
         </div>
         
         <div class="amount">
-                          <strong>Amount Paid: NPR {receiptData.amount}</strong>
+          <strong>Amount Paid: ${receiptData.amount}</strong>
         </div>
         
         <div class="status">
@@ -318,7 +318,7 @@ export default function PaymentSuccess() {
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-gray-700 font-semibold text-lg">Amount Paid</span>
                   <span className="text-3xl font-bold text-emerald-600">
-                    NPR {paymentDetails ? paymentDetails.amount : "0.00"}
+                    Rs. {paymentDetails ? paymentDetails.amount : "0.00"}
                   </span>
                 </div>
 

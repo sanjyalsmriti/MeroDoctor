@@ -5,7 +5,7 @@ const Banner = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="relative overflow-hidden bg-gradient-healthcare rounded-3xl mx-4 md:mx-8 lg:mx-12 my-16">
+    <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl mx-4 md:mx-8 lg:mx-12 my-16">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -27,7 +27,7 @@ const Banner = () => {
             {/* Main Heading */}
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
               Book Appointment
-              <span className="block bg-gradient-to-r from-accent-orange to-accent-purple bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
                 With 100+ Trusted Doctors
               </span>
             </h2>
@@ -66,7 +66,7 @@ const Banner = () => {
                 navigate("/login");
                 scrollTo(0, 0);
               }}
-              className="group btn-primary px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center gap-3 mx-auto lg:mx-0"
+              className="group bg-white text-gray-800 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center gap-3 mx-auto lg:mx-0"
             >
               Create Account
               <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ const Banner = () => {
             <div className="relative z-10">
               <img
                 className="w-full max-w-md mx-auto lg:ml-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500"
-                src={assets.women_doctor}
+                src={assets.appointment_img}
                 alt="Appointment booking"
               />
               
